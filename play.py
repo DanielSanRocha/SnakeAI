@@ -1,11 +1,6 @@
 import pygame
 from objects.level import Level
-
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 600
-GRID_SIZE_X = 2
-GRID_SIZE_Y = 2
-BLACK = (0,0,0)
+from config import SCREEN_WIDTH,SCREEN_HEIGHT,GRID_SIZE_X,GRID_SIZE_Y,BACKGROUND_COLOR
 
 def main():
     pygame.init()
@@ -43,7 +38,7 @@ def main():
             control = 3
 
 
-        screen.fill(BLACK)
+        screen.fill(BACKGROUND_COLOR)
         level.tick(screen, deltaTime, control)
         pygame.display.flip()
 

@@ -1,13 +1,8 @@
 import pygame
 from objects.level import Level
 from agent import Agent
-
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 600
-GRID_SIZE_X = 6
-GRID_SIZE_Y = 6
-BLACK = (0,0,0)
-TRAIN_INTERVAL = 50
+from config import SCREEN_WIDTH,SCREEN_HEIGHT,GRID_SIZE_X,GRID_SIZE_Y,BACKGROUND_COLOR
+from config import BRAIN_LOAD_FILENAME,BRAIN_SAVE_FILENAME,FRAME_RATE,TRAIN_INTERVAL
 
 def main():
     pygame.init()
@@ -19,17 +14,14 @@ def main():
     running = True
 
     level = Level(GRID_SIZE_X,GRID_SIZE_Y,SCREEN_WIDTH,SCREEN_HEIGHT)
-    getTicksLastFrame = 0
 
     agent = Agent(GRID_SIZE_X,GRID_SIZE_Y,4)
-    agent.loadNeuralNetwork()
+    if(BRAIN_LOAD_FILENAME):
+        agent.loadNeuralNetwork(BRAIN_LOAD_FILENAME)
     train_counter = 0
 
     while running:
-        t = pygame.time.get_ticks()
-        deltaTime = (t - getTicksLastFrame) / 1000.0
-        getTicksLastFrame = t
-        clock.tick(10)
+        deltaTime = clock.tick(FRAME_RATE)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -40,7 +32,7 @@ def main():
         state = level.getState()
         control = agent.predict(state)
 
-        screen.fill(BLACK)
+        screen.fill(BACKGROUND_COLOR)
         state = level.getState()
         result = level.tick(screen, deltaTime, control)
         next_state = level.getState()
@@ -53,8 +45,8 @@ def main():
             train_counter = 0
             agent.train()
 
-    agent.saveNeuralNetwork()
-    # agent.saveMemories()
+    if(BRAIN_SAVE_FILENAME):
+        agent.saveNeuralNetwork(BRAIN_SAVE_FILENAME)
     pygame.quit()
 
 if __name__=="__main__":

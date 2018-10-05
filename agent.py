@@ -7,6 +7,9 @@ from keras.optimizers import Adam
 from keras.utils import to_categorical
 import random
 
+from config import LEARNING_RATE,EXPLORATION_COEFFICIENT,EXPLORATION_COEFFICIENT_DECAY,GAMMA,EPOCHS
+from config import DEATH_REWARD,EAT_FRUIT_REWARD,FOOD_DISTANCE_REWARD_MULTIPLICATION_FACTOR,FOOD_DISTANCE_REWARD_LINEAR_FACTOR
+
 class Agent:
     def __init__(self, grid_size_x, grid_size_y, action_size):
         self.grid_size_x = grid_size_x
@@ -14,15 +17,26 @@ class Agent:
         self.action_size = action_size
         self.memories = {'state': [], 'next_state': [], 'action': [], 'distance': [], 'result': [], 'reward': []}
 
-        self.epochs = 1
-        self.learning_rate = 0.004
-        self.stupidity_threshold = 0.001
-        self.epsilon = 0.00
-        self.delta_epsilon = 0.0001
-        self.distance_food_reward_factor = 0.5
-        self.gamma = 0.2
+        self.epochs = EPOCHS
+        self.learning_rate = LEARNING_RATE
+        self.epsilon = EXPLORATION_COEFFICIENT
+        self.delta_epsilon = EXPLORATION_COEFFICIENT_DECAY
+        self.food_distance_reward_linear_factor = FOOD_DISTANCE_REWARD_LINEAR_FACTOR
+        self.food_distance_reward_multiplication_factor = FOOD_DISTANCE_REWARD_MULTIPLICATION_FACTOR
+        self.gamma = GAMMA
 
         self.model = self._build_model()
+
+    def calculateReward(self,distance,result):
+        reward = 0
+        if result == -1:
+            reward = -5
+        elif result == 0:
+            reward = self.food_distance_reward_multiplication_factor/distance + self.food_distance_reward_linear_factor
+        elif result == 1:
+            reward = 5
+
+        return reward
 
     def _build_model(self):
         model = Sequential()
@@ -36,16 +50,7 @@ class Agent:
         return model
 
     def remember(self, state, action, next_state, distance, result):
-        reward = 0
-        if result == -1:
-            self.epsilon = 0
-            reward = -5
-        elif result == 0:
-            self.epsilon += self.stupidity_threshold
-            reward = self.distance_food_reward_factor/distance
-        elif result == 1:
-            self.epsilon = 0
-            reward = 5
+        reward = self.calculateReward(distance,result)
 
         self.memories['state'].append(state)
         self.memories['action'].append(action)
@@ -59,16 +64,11 @@ class Agent:
             return random.randrange(self.action_size)
 
         act_values = self.model.predict(np.array([state]))
-
-        if (act_values < self.stupidity_threshold).all():
-            return random.randrange(self.action_size)
-
         return np.argmax(act_values[0])
 
     def train(self):
         if self.epsilon > 0:
             self.epsilon -= self.delta_epsilon
-            print(self.epsilon)
 
         X = np.array(self.memories['state'])
         Y = self.model.predict(X)
@@ -87,15 +87,8 @@ class Agent:
 
         self.memories = {'state': [], 'next_state': [], 'action': [], 'distance': [], 'result': [], 'reward': []}
 
-    def saveMemories(self):
-        with open('memories.json', 'w') as outfile:
-            json.dump(self.memories, outfile)
+    def saveNeuralNetwork(self,filename):
+        self.model.save_weights(filename)
 
-    def saveNeuralNetwork(self):
-        self.model.save_weights('brain.h5')
-
-    def loadMemories(self):
-        self.memories = np.load('memories.npy').tolist()
-
-    def loadNeuralNetwork(self):
-        self.model.load_weights('brain.h5')
+    def loadNeuralNetwork(self,filename):
+        self.model.load_weights(filename)
