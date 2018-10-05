@@ -3,8 +3,8 @@ from objects.level import Level
 
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
-GRID_SIZE_X = 20
-GRID_SIZE_Y = 20
+GRID_SIZE_X = 2
+GRID_SIZE_Y = 2
 BLACK = (0,0,0)
 
 def main():
@@ -24,7 +24,7 @@ def main():
         t = pygame.time.get_ticks()
         deltaTime = (t - getTicksLastFrame) / 1000.0
         getTicksLastFrame = t
-        clock.tick(10)
+        clock.tick(4)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -32,7 +32,7 @@ def main():
 
         keys=pygame.key.get_pressed()
 
-        control = -1
+        control = level.snake.getDirection()
         if keys[pygame.K_UP]:
             control = 0
         elif keys[pygame.K_RIGHT]:
@@ -44,9 +44,7 @@ def main():
 
 
         screen.fill(BLACK)
-
         level.tick(screen, deltaTime, control)
-
         pygame.display.flip()
 
     pygame.quit()

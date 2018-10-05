@@ -1,6 +1,7 @@
 import pygame
 
 GREEN = (0,255,0)
+RED =(255,0,0)
 # 0 = UP, 1 = RIGHT, 2 = DOWN, 3 = LEFT
 
 class Snake:
@@ -17,7 +18,13 @@ class Snake:
     def tick(self,screen,deltaTime,control):
         self.lastPieceLastPosition = self.pieces[len(self.pieces)-1]
         self.move(control)
-        for piece in self.pieces:
+
+        pygame.draw.rect(screen, RED, pygame.Rect(
+        self.x*self.pixel_size_x, self.y*self.pixel_size_y,
+        self.pixel_size_x,self.pixel_size_y))
+
+        for index in range(1,len(self.pieces)):
+            piece = self.pieces[index]
             pygame.draw.rect(screen, GREEN, pygame.Rect(
             piece[0]*self.pixel_size_x, piece[1]*self.pixel_size_y,
             self.pixel_size_x,self.pixel_size_y))
@@ -41,6 +48,9 @@ class Snake:
 
         self.pieces[0] = [self.x,self.y]
 
+    def getDirection(self):
+        return self.direction
+
     def hasTouchedItself(self):
         for i in range(1,len(self.pieces)):
             if self.pieces[i][0] == self.x and self.pieces[i][1] == self.y:
@@ -50,3 +60,12 @@ class Snake:
     def grow(self):
         new_piece = self.lastPieceLastPosition
         self.pieces.append(new_piece)
+
+    def getPieces(self):
+        return self.pieces
+
+    def contains(self,x,y):
+        for piece in self.pieces:
+            if piece[0] == x and piece[1] == y:
+                return True
+        return False
