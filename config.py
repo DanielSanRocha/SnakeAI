@@ -12,7 +12,7 @@ EXPLORATION_COEFFICIENT = 0.05
 EXPLORATION_COEFFICIENT_DECAY = 0.00
 LEARNING_RATE = 0.004
 EPOCHS = 1
-TRAIN_INTERVAL = 50
+TRAIN_INTERVAL = 50 # Set to -1 for not training
 
 # Reward Parameters
 DEATH_REWARD = -5
@@ -22,4 +22,4 @@ FOOD_DISTANCE_REWARD_LINEAR_FACTOR = 1
 
 # FileIO Parameters
 BRAIN_LOAD_FILENAME = "brain.h5" #Leave a empty for not loading a brain
-BRAIN_SAVE_FILENAME = "brain.h5" #Leave a empty for not saving the brain
+BRAIN_SAVE_FILENAME = "" #Leave a empty for not saving the brain
