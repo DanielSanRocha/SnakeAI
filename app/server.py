@@ -2,13 +2,15 @@ import logging
 import os
     
 from aiohttp import web
-from app.routes import ROUTES
+
+from app.routes import add_routes
 
 logging.basicConfig(level=logging.DEBUG)
 
 async def main():
     app_server = web.Application()
-    app_server.add_routes(ROUTES)
+    add_routes(app_server)
+
     return app_server
 
 if __name__ == '__main__':
