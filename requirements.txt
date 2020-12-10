@@ -1,7 +1,7 @@
 aiohttp==3.5.4
 numpy==1.16.1
 keras==2.2.4
-tensorflow==1.13.0rc1
+tensorflow==2.4.0rc4
 gunicorn==19.9.0
 aiohttp-cors==0.7.0
 pygame
